@@ -1,0 +1,351 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="Ascend">
+<meta name="theme-color" content="#0d0d0f">
+<title>Ascend — Daily Self Improvement</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;500;600;700;800&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #0d0d0f;
+    --surface: #161618;
+    --surface2: #1e1e21;
+    --border: rgba(255,255,255,0.07);
+    --border2: rgba(255,255,255,0.13);
+    --text: #f0ede8;
+    --muted: rgba(240,237,232,0.45);
+    --hint: rgba(240,237,232,0.22);
+    --purple: #a78bfa;
+    --purple-dim: rgba(167,139,250,0.12);
+    --purple-mid: rgba(167,139,250,0.25);
+    --green: #86efac;
+    --green-dim: rgba(134,239,172,0.1);
+    --amber: #fbbf24;
+    --amber-dim: rgba(251,191,36,0.1);
+    --blue: #7dd3fc;
+    --blue-dim: rgba(125,211,252,0.1);
+    --safe-top: env(safe-area-inset-top, 0px);
+    --safe-bottom: env(safe-area-inset-bottom, 0px);
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
+  html, body { height: 100%; background: var(--bg); color: var(--text); font-family: 'DM Sans', sans-serif; overscroll-behavior: none; }
+  body { display: flex; flex-direction: column; max-width: 430px; margin: 0 auto; height: 100dvh; overflow: hidden; }
+
+  /* TOP BAR */
+  .topbar {
+    padding: calc(var(--safe-top) + 14px) 22px 0;
+    flex-shrink: 0;
+  }
+  .topbar-row { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 18px; }
+  .app-name { font-family: 'Syne', sans-serif; font-size: 11px; font-weight: 700; letter-spacing: 0.2em; text-transform: uppercase; color: var(--purple); }
+  .date-str { font-size: 12px; color: var(--muted); }
+  .big-greeting { font-family: 'Syne', sans-serif; font-size: 28px; font-weight: 800; color: var(--text); line-height: 1.1; margin-bottom: 6px; }
+  .sub-greeting { font-size: 13px; color: var(--muted); margin-bottom: 20px; }
+
+  /* XP BAR */
+  .xp-section { margin-bottom: 20px; }
+  .xp-row { display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px; }
+  .xp-left { font-size: 12px; color: var(--muted); }
+  .xp-right { font-family: 'Syne', sans-serif; font-size: 13px; font-weight: 700; color: var(--purple); }
+  .xp-track { height: 4px; background: var(--surface2); border-radius: 4px; overflow: hidden; }
+  .xp-fill { height: 100%; background: linear-gradient(90deg, var(--purple), #c4b5fd); border-radius: 4px; transition: width 0.5s cubic-bezier(0.34,1.56,0.64,1); }
+
+  /* STREAK */
+  .streak-pill {
+    display: inline-flex; align-items: center; gap: 5px;
+    background: var(--amber-dim); border: 0.5px solid rgba(251,191,36,0.2);
+    border-radius: 20px; padding: 4px 12px;
+    font-size: 12px; font-weight: 500; color: var(--amber);
+  }
+
+  /* TABS */
+  .tabs-wrap { padding: 0 22px; flex-shrink: 0; }
+  .tabs { display: flex; gap: 6px; padding-bottom: 14px; overflow-x: auto; scrollbar-width: none; }
+  .tabs::-webkit-scrollbar { display: none; }
+  .tab {
+    flex-shrink: 0; padding: 7px 16px; border-radius: 30px;
+    border: 0.5px solid var(--border2);
+    background: transparent;
+    font-family: 'DM Sans', sans-serif; font-size: 13px; font-weight: 500;
+    color: var(--muted); cursor: pointer; transition: all 0.2s;
+  }
+  .tab.active { background: var(--purple); color: #0d0d0f; border-color: var(--purple); font-weight: 700; }
+
+  /* SCROLL AREA */
+  .scroll { flex: 1; overflow-y: auto; padding: 0 22px; scrollbar-width: none; }
+  .scroll::-webkit-scrollbar { display: none; }
+  .scroll-inner { padding-bottom: calc(var(--safe-bottom) + 100px); }
+
+  /* QUOTE */
+  .quote-card {
+    background: var(--purple-dim); border: 0.5px solid var(--purple-mid);
+    border-radius: 18px; padding: 16px 18px; margin-bottom: 20px;
+  }
+  .quote-text { font-size: 14px; color: var(--text); line-height: 1.6; font-style: italic; margin-bottom: 6px; }
+  .quote-author { font-size: 11px; color: var(--purple); font-weight: 500; letter-spacing: 0.05em; }
+
+  /* SECTION LABEL */
+  .section-label {
+    font-family: 'Syne', sans-serif; font-size: 10px; font-weight: 700;
+    letter-spacing: 0.15em; text-transform: uppercase; color: var(--hint);
+    margin: 20px 0 10px;
+  }
+
+  /* TASK CARD */
+  .task-card {
+    display: flex; align-items: center; gap: 14px;
+    background: var(--surface); border: 0.5px solid var(--border);
+    border-radius: 18px; padding: 14px 16px; margin-bottom: 8px;
+    cursor: pointer; transition: all 0.2s; user-select: none;
+  }
+  .task-card:active { transform: scale(0.97); }
+  .task-card.done { opacity: 0.4; }
+  .task-card.done .task-title { text-decoration: line-through; }
+
+  .task-icon {
+    width: 46px; height: 46px; border-radius: 14px;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 22px; flex-shrink: 0;
+  }
+  .icon-fitness { background: var(--purple-dim); }
+  .icon-diet { background: var(--green-dim); }
+  .icon-mind { background: var(--blue-dim); }
+  .icon-sleep { background: var(--amber-dim); }
+
+  .task-info { flex: 1; min-width: 0; }
+  .task-title { font-size: 15px; font-weight: 500; color: var(--text); margin-bottom: 3px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .task-sub { font-size: 12px; color: var(--muted); line-height: 1.4; }
+  .task-xp { font-size: 11px; color: var(--purple); font-weight: 500; margin-top: 4px; }
+
+  .check {
+    width: 28px; height: 28px; border-radius: 50%;
+    border: 1.5px solid var(--border2);
+    display: flex; align-items: center; justify-content: center;
+    flex-shrink: 0; transition: all 0.2s;
+  }
+  .check.checked { background: var(--purple); border-color: var(--purple); }
+
+  /* BOTTOM STATS BAR */
+  .bottom-bar {
+    flex-shrink: 0;
+    position: fixed; bottom: 0; left: 50%; transform: translateX(-50%);
+    width: 100%; max-width: 430px;
+    background: rgba(13,13,15,0.92); backdrop-filter: blur(20px);
+    border-top: 0.5px solid var(--border2);
+    padding: 12px 22px calc(var(--safe-bottom) + 12px);
+    display: flex; justify-content: space-around; align-items: center;
+  }
+  .stat { text-align: center; }
+  .stat-num { font-family: 'Syne', sans-serif; font-size: 20px; font-weight: 800; color: var(--text); }
+  .stat-label { font-size: 10px; color: var(--muted); margin-top: 2px; letter-spacing: 0.04em; }
+  .stat-div { width: 0.5px; height: 32px; background: var(--border2); }
+  .reset-btn {
+    background: var(--surface2); border: 0.5px solid var(--border2);
+    color: var(--muted); font-family: 'DM Sans', sans-serif; font-size: 12px;
+    padding: 8px 18px; border-radius: 30px; cursor: pointer; transition: all 0.2s;
+  }
+  .reset-btn:active { transform: scale(0.96); }
+
+  @keyframes pop { 0% { transform: scale(1); } 50% { transform: scale(1.15); } 100% { transform: scale(1); } }
+  .pop { animation: pop 0.3s ease; }
+</style>
+</head>
+<body>
+
+<div class="topbar">
+  <div class="topbar-row">
+    <div>
+      <div class="app-name">Ascend</div>
+      <div class="date-str" id="dateStr"></div>
+    </div>
+    <div class="streak-pill" id="streakPill">🔥 0 days</div>
+  </div>
+  <div class="big-greeting" id="greeting">Let's get it.</div>
+  <div class="sub-greeting" id="subGreeting">Complete your daily tasks and level up.</div>
+  <div class="xp-section">
+    <div class="xp-row">
+      <span class="xp-left">Daily XP</span>
+      <span class="xp-right" id="xpLabel">0 / 500</span>
+    </div>
+    <div class="xp-track"><div class="xp-fill" id="xpFill" style="width:0%"></div></div>
+  </div>
+</div>
+
+<div class="tabs-wrap">
+  <div class="tabs" id="tabsEl">
+    <button class="tab active" onclick="switchTab('all',this)">All</button>
+    <button class="tab" onclick="switchTab('fitness',this)">💪 Fitness</button>
+    <button class="tab" onclick="switchTab('diet',this)">🥗 Diet</button>
+    <button class="tab" onclick="switchTab('mind',this)">🧠 Mind</button>
+    <button class="tab" onclick="switchTab('sleep',this)">🌙 Sleep</button>
+  </div>
+</div>
+
+<div class="scroll">
+  <div class="scroll-inner" id="taskList"></div>
+</div>
+
+<div class="bottom-bar">
+  <div class="stat"><div class="stat-num" id="doneNum">0</div><div class="stat-label">done</div></div>
+  <div class="stat-div"></div>
+  <div class="stat"><div class="stat-num" id="leftNum">12</div><div class="stat-label">left</div></div>
+  <div class="stat-div"></div>
+  <div class="stat"><div class="stat-num" id="xpNum">0</div><div class="stat-label">XP</div></div>
+  <div class="stat-div"></div>
+  <button class="reset-btn" onclick="resetDay()">New day</button>
+</div>
+
+<script>
+const TASKS = [
+  { id:1, cat:'fitness', icon:'💪', cls:'icon-fitness', title:'Morning workout', sub:'30 min — push, pull, or cardio', xp:80 },
+  { id:2, cat:'fitness', icon:'🚶', cls:'icon-fitness', title:'10,000 steps', sub:'Walk throughout the day', xp:50 },
+  { id:3, cat:'fitness', icon:'🧘', cls:'icon-fitness', title:'Stretch for 10 min', sub:'Mobility keeps you injury-free', xp:30 },
+  { id:4, cat:'diet', icon:'🥩', cls:'icon-diet', title:'Hit your protein goal', sub:'0.8–1g per lb of bodyweight', xp:60 },
+  { id:5, cat:'diet', icon:'💧', cls:'icon-diet', title:'Drink 3L of water', sub:'Hydration = energy + clear skin', xp:40 },
+  { id:6, cat:'diet', icon:'🥗', cls:'icon-diet', title:'Eat whole foods', sub:'Zero ultra-processed junk today', xp:50 },
+  { id:7, cat:'diet', icon:'🍽️', cls:'icon-diet', title:'No late night eating', sub:'Stop eating 3hrs before bed', xp:30 },
+  { id:8, cat:'mind', icon:'📖', cls:'icon-mind', title:'Read for 20 min', sub:'Self-development or skills', xp:40 },
+  { id:9, cat:'mind', icon:'📵', cls:'icon-mind', title:'No mindless scrolling', sub:'Put the phone down intentionally', xp:60 },
+  { id:10, cat:'mind', icon:'📓', cls:'icon-mind', title:'Journal for 5 min', sub:'Wins, goals, reflections', xp:30 },
+  { id:11, cat:'sleep', icon:'🌙', cls:'icon-sleep', title:'In bed by 10:30 PM', sub:'Sleep is your #1 recovery tool', xp:70 },
+  { id:12, cat:'sleep', icon:'❄️', cls:'icon-sleep', title:'Cool room for sleep', sub:'65–68°F is the sweet spot', xp:20 },
+];
+
+const QUOTES = [
+  { text:'The body achieves what the mind believes.', author:'Napoleon Hill' },
+  { text:'Discipline is choosing what you want most over what you want now.', author:'Unknown' },
+  { text:'Small daily improvements lead to stunning results.', author:'Robin Sharma' },
+  { text:'You don\'t have to be extreme. Just consistent.', author:'Unknown' },
+  { text:'Every rep, every meal, every night of good sleep — it compounds.', author:'Unknown' },
+  { text:'The version of you 90 days from now is built today.', author:'Unknown' },
+  { text:'Pain is temporary. Quitting lasts forever.', author:'Lance Armstrong' },
+];
+
+const CAT_LABELS = { fitness:'Fitness', diet:'Diet & nutrition', mind:'Mindset', sleep:'Sleep & recovery' };
+const MAX_XP = 500;
+let done = new Set();
+let currentTab = 'all';
+let streak = parseInt(localStorage.getItem('ascend_streak') || '0');
+let lastDate = localStorage.getItem('ascend_lastDate') || '';
+
+function getTodayStr() {
+  return new Date().toDateString();
+}
+
+function loadState() {
+  const today = getTodayStr();
+  if (lastDate !== today) {
+    if (lastDate) {
+      const yesterday = new Date(); yesterday.setDate(yesterday.getDate()-1);
+      streak = (lastDate === yesterday.toDateString()) ? streak + 1 : 0;
+    }
+    done.clear();
+    localStorage.setItem('ascend_lastDate', today);
+    localStorage.setItem('ascend_streak', streak);
+    localStorage.removeItem('ascend_done');
+  } else {
+    const saved = localStorage.getItem('ascend_done');
+    if (saved) done = new Set(JSON.parse(saved));
+  }
+}
+
+function saveState() {
+  localStorage.setItem('ascend_done', JSON.stringify([...done]));
+  localStorage.setItem('ascend_streak', streak);
+  localStorage.setItem('ascend_lastDate', getTodayStr());
+}
+
+function getXP() { return [...done].reduce((s,id)=>s+(TASKS.find(t=>t.id===id)?.xp||0),0); }
+
+function updateHeader() {
+  const xp = getXP();
+  const pct = Math.min((xp/MAX_XP)*100,100);
+  document.getElementById('xpFill').style.width = pct+'%';
+  document.getElementById('xpLabel').textContent = xp+' / '+MAX_XP;
+  document.getElementById('doneNum').textContent = done.size;
+  document.getElementById('leftNum').textContent = TASKS.length - done.size;
+  document.getElementById('xpNum').textContent = xp;
+  document.getElementById('streakPill').textContent = '🔥 '+streak+' day'+(streak!==1?'s':'');
+  const greetings = [
+    ['Level up today.','Every rep, every meal — it all counts.'],
+    ['Stay consistent.','Show up even when you don\'t feel like it.'],
+    ['Build the body.','Build the mind. Build the life.'],
+  ];
+  const g = greetings[new Date().getDay()%greetings.length];
+  if (done.size === TASKS.length) {
+    document.getElementById('greeting').textContent = 'You crushed it! 🔥';
+    document.getElementById('subGreeting').textContent = 'All tasks done. Rest up and do it again tomorrow.';
+  } else {
+    document.getElementById('greeting').textContent = g[0];
+    document.getElementById('subGreeting').textContent = g[1];
+  }
+}
+
+function render() {
+  const tasks = currentTab==='all' ? TASKS : TASKS.filter(t=>t.cat===currentTab);
+  const cats = [...new Set(tasks.map(t=>t.cat))];
+  const q = QUOTES[new Date().getDate()%QUOTES.length];
+  let html = `<div class="quote-card"><div class="quote-text">"${q.text}"</div><div class="quote-author">— ${q.author}</div></div>`;
+  cats.forEach(cat=>{
+    const catTasks = tasks.filter(t=>t.cat===cat);
+    html += `<div class="section-label">${CAT_LABELS[cat]}</div>`;
+    catTasks.forEach(t=>{
+      const isDone = done.has(t.id);
+      html += `<div class="task-card${isDone?' done':''}" id="card-${t.id}" onclick="toggle(${t.id})">
+        <div class="task-icon ${t.cls}">${t.icon}</div>
+        <div class="task-info">
+          <div class="task-title">${t.title}</div>
+          <div class="task-sub">${t.sub}</div>
+          <div class="task-xp">+${t.xp} XP</div>
+        </div>
+        <div class="check${isDone?' checked':''}">
+          ${isDone?`<svg width="14" height="14" viewBox="0 0 14 14" fill="none"><path d="M2.5 7L5.5 10L11.5 4" stroke="#0d0d0f" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>`:''}
+        </div>
+      </div>`;
+    });
+  });
+  document.getElementById('taskList').innerHTML = html;
+  updateHeader();
+}
+
+function toggle(id) {
+  if (done.has(id)) done.delete(id);
+  else done.add(id);
+  saveState();
+  render();
+}
+
+function switchTab(tab, el) {
+  currentTab = tab;
+  document.querySelectorAll('.tab').forEach(t=>t.classList.remove('active'));
+  el.classList.add('active');
+  render();
+}
+
+function resetDay() {
+  if (!confirm('Reset for a new day?')) return;
+  done.clear();
+  streak = 0;
+  saveState();
+  render();
+}
+
+function setDate() {
+  const d = new Date();
+  const days = ['Sunday','Monday','Tuesday','Wednesday','Thursday','Friday','Saturday'];
+  const months = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+  document.getElementById('dateStr').textContent = days[d.getDay()]+', '+months[d.getMonth()]+' '+d.getDate();
+}
+
+loadState();
+setDate();
+render();
+</script>
+</body>
+</html>
